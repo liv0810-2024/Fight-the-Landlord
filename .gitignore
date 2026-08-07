@@ -1,0 +1,27 @@
+# Unity 缓存库（最大体积，必须过滤！）
+/[Ll]ibrary/
+/[Tt]emp/
+/[Oo]bj/
+/[Bb]uild/
+/[Bb]uilds/
+/[Ll]ogs/
+/UserSettings/
+/.vs/
+
+# 编译输出
+*.exe
+*.dll
+*.pdb
+*.log
+
+# VS、Rider IDE文件
+.idea/
+*.sln
+*.csproj
+*.userprefs
+
+# macOS系统垃圾
+.DS_Store
+
+# Windows系统垃圾
+Thumbs.db
