@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 /// <summary>
@@ -29,7 +30,8 @@ public class GameMainManager : Singleton<GameMainManager>
     /// </summary>
     private void InitAllFramework()
     {
-       
+        //// 触发ObjectPoolManager 的单例初始化（第一次访问 Instance 会自动创建）
+        var pool = ObjectPoolManager.Instance;
     }
     /// <summary>
     /// 切换游戏全局状态，所有状态变更强制调用这个方法
