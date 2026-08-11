@@ -17,7 +17,7 @@ public class Singleton<T> : MonoBehaviour where T : MonoBehaviour
             {
                 //创建物体，物体名字就用脚本类名
                 GameObject gameObject = new GameObject(typeof(T).Name);
-                _instance=gameObject.GetComponent<T>();
+                _instance=gameObject.AddComponent<T>();
                 //设置物体跨场景不销毁，切换场景不会被删掉
                 DontDestroyOnLoad(gameObject);
             }
@@ -34,7 +34,7 @@ public class Singleton<T> : MonoBehaviour where T : MonoBehaviour
         }
         else
         {
-            Destroy( _instance );
+            Destroy(gameObject);
         }
     }
 }

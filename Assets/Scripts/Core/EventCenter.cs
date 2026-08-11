@@ -18,8 +18,8 @@ public class EventCenter :Singleton<EventCenter>
         {
             //字典里面没有这个事件，先初始化赋值null 防止报错
             _eventDict[name] = null; 
-            _eventDict[name] += action; //+= 追加回调函数，多个脚本可以监听同一个事件
         }
+        _eventDict[name] += action; //+= 追加回调函数，多个脚本可以监听同一个事件
     }
     /// <summary>
     /// 移除事件

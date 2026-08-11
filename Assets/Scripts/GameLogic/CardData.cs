@@ -8,6 +8,7 @@ using UnityEngine;
 [Serializable]
 public class CardData
 {
+    public int id; 
     /// <summary>卡牌花色：黑桃/红桃/梅花/方块/无(大小王)</summary>
     public CardSuit suit;
     /// <summary>卡牌点数：3、4 ... A、2、小王、大王</summary>

@@ -7,7 +7,7 @@ using UnityEngine;
 /// </summary>
 public class ObjectPoolManager : Singleton<ObjectPoolManager>
 {
-    public Dictionary<string, Queue<GameObject>> poolDir;
+    public Dictionary<string, Queue<GameObject>> poolDirt;
     /// <summary>
     /// 回收物体的父节点，所有正在池子里"休眠"的物体会挂在它下面
     /// </summary>
@@ -15,7 +15,7 @@ public class ObjectPoolManager : Singleton<ObjectPoolManager>
     protected override void Awake()
     {
         base.Awake();
-        poolDir = new Dictionary<string, Queue<GameObject>>();
+        poolDirt = new Dictionary<string, Queue<GameObject>>();
         if (poolRoot == null)
         {
             //在场景里创建一个空节点，专门存放回收的物体
@@ -33,13 +33,13 @@ public class ObjectPoolManager : Singleton<ObjectPoolManager>
     public GameObject GetGameObject(string name,GameObject prefab,Transform parent = null)
     {
         GameObject obj;
-        if (!poolDir.ContainsKey(name))
+        if (!poolDirt.ContainsKey(name))
         {
-            poolDir[name] = new Queue<GameObject>();
+            poolDirt[name] = new Queue<GameObject>();
         }
-        if (poolDir[name].Count > 0)
+        if (poolDirt[name].Count > 0)
         {
-            obj = poolDir[name].Dequeue();
+            obj = poolDirt[name].Dequeue();
         }
         else
         {
@@ -62,11 +62,11 @@ public class ObjectPoolManager : Singleton<ObjectPoolManager>
     public void Recycle(string name,GameObject obj)
     {
         obj.SetActive(false);
-        if (!poolDir.ContainsKey(name))
+        if (!poolDirt.ContainsKey(name))
         {
-            poolDir[name] = new Queue<GameObject>();
+            poolDirt[name] = new Queue<GameObject>();
         }
-        poolDir[name].Enqueue(obj);
+        poolDirt[name].Enqueue(obj);
         obj.transform.SetParent(poolRoot);
     }
     /// <summary>
@@ -77,16 +77,16 @@ public class ObjectPoolManager : Singleton<ObjectPoolManager>
     /// <param name="count">预加载数量</param>
     public void Prewarm(string name,GameObject prefab,int count)
     {
-        if (!poolDir.ContainsKey(name))
+        if (!poolDirt.ContainsKey(name))
         {
-            poolDir[name] = new Queue<GameObject>();
+            poolDirt[name] = new Queue<GameObject>();
         }
         for(int i = 0; i < count; i++)
         {
             GameObject gameObject1 = GameObject.Instantiate(prefab);
             gameObject1.SetActive(false);
             gameObject1.transform.SetParent(poolRoot);
-            poolDir[name].Enqueue(gameObject1);
+            poolDirt[name].Enqueue(gameObject1);
         }
     }
     /// <summary>
@@ -95,14 +95,14 @@ public class ObjectPoolManager : Singleton<ObjectPoolManager>
     /// <param name="name"></param>
     public void ClearPool(string name)
     {
-        if (poolDir.ContainsKey(name))
+        if (poolDirt.ContainsKey(name))
         {
-            while (poolDir[name].Count > 0)
+            while (poolDirt[name].Count > 0)
             {
-                GameObject obj = poolDir[name].Dequeue();
+                GameObject obj = poolDirt[name].Dequeue();
                 Destroy(obj);
             }
-            poolDir.Remove(name);
+            poolDirt.Remove(name);
         }
     }
     /// <summary>
@@ -111,7 +111,7 @@ public class ObjectPoolManager : Singleton<ObjectPoolManager>
     public void ClearAll()
     {
         //遍历字典的每一个键值对
-        foreach(var kvp in poolDir)
+        foreach(var kvp in poolDirt)
         {
             Queue<GameObject> queue = kvp.Value;
             while (queue.Count > 0)
@@ -120,6 +120,6 @@ public class ObjectPoolManager : Singleton<ObjectPoolManager>
                 Destroy(obj);
             }
         }
-        poolDir.Clear(); // 清空整个字典
+        poolDirt.Clear(); // 清空整个字典
     }
 }
