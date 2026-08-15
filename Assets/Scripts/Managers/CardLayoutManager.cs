@@ -1,4 +1,3 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -14,13 +13,24 @@ public class CardLayoutManager : Singleton<CardLayoutManager>
     //牌的y坐标
     public float myHandY = -0.35f;
     public float bottomCardY = 3f;
+
+    //Ai的相关设置
+    public Transform leftHandArea;
+    public Transform rightHandArea;
+    public float spacingY;
+    public float leftHandX=-6.5f;
+    public float rightHandX=6.5f;
+    public float aiTotalCardLength=4f;
     protected override void Awake()
     {
         base.Awake();
         EventCenter.Instance.Register(GameEvent.Game_DealCardFinish, OnDealFinish);
+        EventCenter.Instance.Register(GameEvent.Game_GrabLandlord, OnGrabLandlord);
         //动态创建父节点
         myHandArea = new GameObject("myHandArea").transform;
         bottomCardArea = new GameObject("bottomCardArea").transform;
+        leftHandArea = new GameObject("leftHandArea").transform;
+        rightHandArea = new GameObject("rightHandArea").transform;
     }
     /// <summary>
     /// 事件回调：发牌完成时被触发。
@@ -30,6 +40,8 @@ public class CardLayoutManager : Singleton<CardLayoutManager>
     {
         ShowMyHand();
         ShowBottomCards();
+        ShowLeftHand();
+        ShowRightHand();
     }
     /// <summary>
     /// 显示玩家手牌
@@ -47,6 +59,12 @@ public class CardLayoutManager : Singleton<CardLayoutManager>
         ClearArea(bottomCardArea);
         LayoutCards(DeckManager.Instance.bottomCards, bottomCardArea, bottomCardY);
     }
+    /// <summary>
+    /// 玩家摆牌
+    /// </summary>
+    /// <param name="cards"></param>
+    /// <param name="parent"></param>
+    /// <param name="y"></param>
     private void LayoutCards(List<CardData> cards, Transform parent, float y)
     {
         int count = cards.Count;
@@ -81,5 +99,49 @@ public class CardLayoutManager : Singleton<CardLayoutManager>
                 CardManager.Instance.RecycleCard(card);
             }
         }
+    }
+    /// <summary>
+    /// 左边ai展示牌
+    /// </summary>
+    private void ShowLeftHand()
+    {
+        ClearArea(leftHandArea);
+        LayoutAiCard(DeckManager.Instance.leftHand, leftHandArea, leftHandX);
+    }
+    /// <summary>
+    /// 右边ai展示牌
+    /// </summary>
+    private void ShowRightHand()
+    {
+        ClearArea(rightHandArea);
+        LayoutAiCard(DeckManager.Instance.rightHand, rightHandArea, rightHandX);
+    }
+    /// <summary>
+    /// Ai展示牌的逻辑
+    /// </summary>
+    /// <param name="cardDatas"></param>
+    /// <param name="parent"></param>
+    /// <param name="x"></param>
+    public void LayoutAiCard(List<CardData> cardDatas, Transform parent, float x)
+    {
+        int count = cardDatas.Count;
+        if (count == 0) return;
+        float spacingY = aiTotalCardLength / (count - 1);
+        float totalLength = (count - 1) * spacingY + aiTotalCardLength;
+        float startY = -totalLength / 2f;
+        for (int i = 0; i < count; i++)
+        {
+            Card card = CardManager.Instance.CreateCard(cardDatas[i], parent);
+            card.ShowCardBack();
+            float y = startY + i * spacingY;
+            card.transform.position = new Vector3(x, y, 0);
+        }
+    }
+    /// <summary>抢地主完成后触发：重新显示所有手牌（地主此时已是20张）</summary>
+    private void OnGrabLandlord(object param)
+    {
+        ShowMyHand();
+        ShowLeftHand();
+        ShowRightHand();
     }
 }

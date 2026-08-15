@@ -1,7 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
-using System.ComponentModel;
-using Unity.Collections;
 using UnityEngine;
 
 public class Card : MonoBehaviour
@@ -171,7 +167,7 @@ public class Card : MonoBehaviour
         Vector3 newPos=gameObject.transform.position;
         if (isSelected)
         {
-            newPos.y = newPos.y + SELECT_OFFSET_Y;
+            newPos.y = originalY + SELECT_OFFSET_Y;
             transform.position = newPos;
             transform.localScale=new Vector3(1.1f, 1.1f, 1f);
         }
@@ -184,6 +180,17 @@ public class Card : MonoBehaviour
         EventCenter.Instance.Trigger(GameEvent.Card_Select, this);
     }
     /// <summary>
+    /// 显示卡牌背面（AI 的牌用）。
+    /// </summary>
+    public void ShowCardBack()
+    {
+        if (spriteRenderer != null)
+        {
+            spriteRenderer.color = new Color(0.25f, 0.35f, 0.7f);
+            gameObject.name = "背面";
+        }
+    }
+    /// <summary>
     /// 回收卡牌
     /// </summary>
     public void ResetCard()
@@ -192,7 +199,7 @@ public class Card : MonoBehaviour
         isPlayOut = false;
         isSelected = false;
         gameObject.name = "Card";
-        transform.position = Vector3.one;
+        transform.localScale = Vector3.one;
         spriteRenderer.color = Color.white;
         gameObject.SetActive(false);
     }
