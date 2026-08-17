@@ -11,7 +11,7 @@ public class CardLayoutManager : Singleton<CardLayoutManager>
     private Transform myHandArea; //玩家手牌区的父节点
     public Transform bottomCardArea;
     //牌的y坐标
-    public float myHandY = -0.35f;
+    public float myHandY = -3.5f;
     public float bottomCardY = 3f;
 
     //Ai的相关设置

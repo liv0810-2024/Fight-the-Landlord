@@ -41,8 +41,8 @@ public class LandlordManager : Singleton<LandlordManager>
         if (isLandlordConfirmed) return;
         if (grab)
         {
-            ConfirmLandlord(0);
             multiple *= 2;
+            ConfirmLandlord(0);  
         }
         else
         {
