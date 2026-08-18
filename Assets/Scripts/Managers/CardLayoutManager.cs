@@ -21,6 +21,8 @@ public class CardLayoutManager : Singleton<CardLayoutManager>
     public float leftHandX=-6.5f;
     public float rightHandX=6.5f;
     public float aiTotalCardLength=4f;
+    //玩家手牌的Card 实体列表
+    private List<Card> myHandCard=new List<Card>();
     protected override void Awake()
     {
         base.Awake();
@@ -31,6 +33,11 @@ public class CardLayoutManager : Singleton<CardLayoutManager>
         bottomCardArea = new GameObject("bottomCardArea").transform;
         leftHandArea = new GameObject("leftHandArea").transform;
         rightHandArea = new GameObject("rightHandArea").transform;
+    }
+    /// <summary>获取玩家手牌的 Card实体列表（供出牌逻辑查询）。</summary>
+    public List<Card> GetMyHandCards()
+    {
+        return myHandCard;
     }
     /// <summary>
     /// 事件回调：发牌完成时被触发。
@@ -46,10 +53,11 @@ public class CardLayoutManager : Singleton<CardLayoutManager>
     /// <summary>
     /// 显示玩家手牌
     /// </summary>
-    private void ShowMyHand()
+    public void ShowMyHand()
     {
         ClearArea(myHandArea);
-        LayoutCards(DeckManager.Instance.myHand, myHandArea, myHandY);
+        myHandCard.Clear(); //清空旧纪录
+        LayoutCards(DeckManager.Instance.myHand, myHandArea, myHandY,myHandCard);
     }
     /// <summary>
     /// 显示玩家底牌
@@ -57,7 +65,7 @@ public class CardLayoutManager : Singleton<CardLayoutManager>
     private void ShowBottomCards()
     {
         ClearArea(bottomCardArea);
-        LayoutCards(DeckManager.Instance.bottomCards, bottomCardArea, bottomCardY);
+        LayoutCards(DeckManager.Instance.bottomCards, bottomCardArea, bottomCardY,null);
     }
     /// <summary>
     /// 玩家摆牌
@@ -65,7 +73,7 @@ public class CardLayoutManager : Singleton<CardLayoutManager>
     /// <param name="cards"></param>
     /// <param name="parent"></param>
     /// <param name="y"></param>
-    private void LayoutCards(List<CardData> cards, Transform parent, float y)
+    private void LayoutCards(List<CardData> cards, Transform parent, float y,List<Card> resultList)
     {
         int count = cards.Count;
         if (count == 0) return;
@@ -82,6 +90,10 @@ public class CardLayoutManager : Singleton<CardLayoutManager>
             float x = startX + i * spacing;
             //设置位置
             card.transform.position=new Vector3(x,y,0);
+            if(resultList!=null)
+            {
+                resultList.Add(card);
+            }
         }
     }
     /// <summary>
