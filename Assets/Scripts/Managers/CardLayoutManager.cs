@@ -23,6 +23,7 @@ public class CardLayoutManager : Singleton<CardLayoutManager>
     public float aiTotalCardLength=4f;
     //玩家手牌的Card 实体列表
     private List<Card> myHandCard=new List<Card>();
+    public Transform playArea; //出牌区父节点
     protected override void Awake()
     {
         base.Awake();
@@ -33,6 +34,7 @@ public class CardLayoutManager : Singleton<CardLayoutManager>
         bottomCardArea = new GameObject("bottomCardArea").transform;
         leftHandArea = new GameObject("leftHandArea").transform;
         rightHandArea = new GameObject("rightHandArea").transform;
+        playArea = new GameObject("playArea").transform;
     }
     /// <summary>获取玩家手牌的 Card实体列表（供出牌逻辑查询）。</summary>
     public List<Card> GetMyHandCards()
@@ -115,7 +117,7 @@ public class CardLayoutManager : Singleton<CardLayoutManager>
     /// <summary>
     /// 左边ai展示牌
     /// </summary>
-    private void ShowLeftHand()
+     public void ShowLeftHand()
     {
         ClearArea(leftHandArea);
         LayoutAiCard(DeckManager.Instance.leftHand, leftHandArea, leftHandX);
@@ -123,7 +125,7 @@ public class CardLayoutManager : Singleton<CardLayoutManager>
     /// <summary>
     /// 右边ai展示牌
     /// </summary>
-    private void ShowRightHand()
+    public void ShowRightHand()
     {
         ClearArea(rightHandArea);
         LayoutAiCard(DeckManager.Instance.rightHand, rightHandArea, rightHandX);
@@ -137,7 +139,7 @@ public class CardLayoutManager : Singleton<CardLayoutManager>
     public void LayoutAiCard(List<CardData> cardDatas, Transform parent, float x)
     {
         int count = cardDatas.Count;
-        if (count == 0) return;
+        if (count <= 1) return;
         float spacingY = aiTotalCardLength / (count - 1);
         float totalLength = (count - 1) * spacingY + aiTotalCardLength;
         float startY = -totalLength / 2f;
@@ -155,5 +157,20 @@ public class CardLayoutManager : Singleton<CardLayoutManager>
         ShowMyHand();
         ShowLeftHand();
         ShowRightHand();
+    }
+    /// <summary>把打出的牌显示到屏幕中央的出牌区。</summary>
+    public void ShowPlayArea(List<CardData> cards)
+    {
+        ClearArea(playArea);
+        if(cards==null||cards.Count == 0) return;
+        //居中水平排列
+        float totalWidth = (cards.Count - 1) * spacing + cardWidth;
+        float startX = -totalWidth / 2f;
+        for(int i=0;i<cards.Count;i++)
+        {
+            Card card = CardManager.Instance.CreateCard(cards[i], playArea);
+            float x = startX + i * spacing;
+            card.transform.position = new Vector3(x, 0, 0);
+        }
     }
 }

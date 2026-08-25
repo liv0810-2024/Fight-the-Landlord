@@ -218,7 +218,7 @@ public static class CardRules
     // <summary>判断 mine 能否压过last。last 为空表示自由出牌。</summary>
     public static bool CanBeat(List<CardData> mine,List<CardData> last)
     {
-        if (last.Count == 0 || last == null) return true;
+        if (last==null||last.Count==0) return true;
         CardType myType=CheckCardType(mine);
         CardType lastType = CheckCardType(last);
         // 王炸压一切
