@@ -20,9 +20,61 @@ public class GameMainManager : Singleton<GameMainManager>
 {
     //当前状态
     public GameState CurrentGameState { get; private set; }
-    private void Start()
+    protected override void Awake()
+    {
+        base.Awake();
+        EventCenter.Instance.Register(GameEvent.Game_DealCardFinish,OnDealFInish);
+        EventCenter.Instance.Register(GameEvent.Game_GrabLandlord,OnGrabLandlord);
+        EventCenter.Instance.Register(GameEvent.Game_RoundOver,OnRoundOver);
+    }
+    private IEnumerator Start()
     {
         InitAllFramework();
+        // 【防御式编程】等卡牌数据加载完成，再开始发牌。
+        // WaitUntil(条件)：协程会""停在这里"，直到条件返回 true 才继续。
+        yield return new WaitUntil(() => DataManager.Instance.isDataLoaded);
+        StartGame();
+    }
+
+    /// <summary>
+    /// 启动游戏：进入发牌阶段，触发发牌。
+    /// </summary>
+    public void StartGame()
+    {
+        SwitchGameState(GameState.DealCard);
+        DeckManager.Instance.DealCards();
+    }
+
+    /// <summary>
+    /// 回调：发牌完成 →进入抢地主阶段。
+    /// </summary>
+    /// <param name="param"></param>
+    public void OnDealFInish(object param)
+    {
+        SwitchGameState(GameState.GrabLandlord);
+        Debug.Log("请抢地主");
+    }
+
+    /// <summary>
+    /// 回调：地主确定 →进入出牌阶段，且地主先出。
+    /// </summary>
+    /// <param name="param"></param>
+    public void OnGrabLandlord(object param)
+    {
+        SwitchGameState(GameState.PlayCard);
+        //事件参数就是地主索引（LandlordManager触发时传进来的）。
+        int landlord = (int)param;
+        PlayCardManager.Instance.StartPlay(landlord);
+    }
+
+    /// <summary>
+    /// 回调：有人出完牌 →进入结算阶段。
+    /// </summary>
+    /// <param name="param"></param>
+    public void OnRoundOver(GameState param)
+    {
+        SwitchGameState(GameState.RoundOver);
+        Debug.Log("本局结束，进入结算");
     }
     /// <summary>
     /// 初始化全部底层管理器模块

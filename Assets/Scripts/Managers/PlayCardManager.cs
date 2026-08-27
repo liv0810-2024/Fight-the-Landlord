@@ -209,4 +209,23 @@ public class PlayCardManager : Singleton<PlayCardManager>
             EventCenter.Instance.Trigger(GameEvent.Game_RoundOver, turn);
         }
     }
+    /// <summary>
+    /// 初始化会和状态
+    /// </summary>
+    /// <param name="firstPlayer"></param>
+    public void StartPlay(int firstPlayer)
+    {
+        isRoundOver=false;
+        currentTurn = firstPlayer;
+        lastPlayedCards = null;
+        lastPlayedPlayer = -1;
+        if (firstPlayer != 0)
+        {
+            StartCoroutine(AIPlayDelayed());
+        }
+        else
+        {
+            Debug.Log("你是地主请出牌");
+        }
+    }
 }
