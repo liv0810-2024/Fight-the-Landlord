@@ -90,4 +90,10 @@ public class LandlordManager : Singleton<LandlordManager>
         if (index == 1) return DeckManager.Instance.leftHand;
         return DeckManager.Instance.rightHand;
     }
+    public void ResetState()
+    {
+        isLandlordConfirmed=false;
+        landLordIndex = -1;
+        multiple = 1;
+    }
 }

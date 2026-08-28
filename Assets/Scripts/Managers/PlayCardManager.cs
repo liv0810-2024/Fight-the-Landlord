@@ -77,6 +77,7 @@ public class PlayCardManager : Singleton<PlayCardManager>
         lastPlayedCards = played;
         lastPlayedPlayer = 0; //我出的
         CardLayoutManager.Instance.ShowMyHand(); //表现层刷新
+        CardLayoutManager.Instance.ShowPlayArea(played);
         //暂时只轮到左AI，AI 逻辑教程12做
         Debug.Log("玩家出了 " + played.Count + " 张牌，轮到左AI");
         CheckWiN(0);
@@ -105,6 +106,7 @@ public class PlayCardManager : Singleton<PlayCardManager>
         lastPlayedPlayer = currentTurn;
         //刷新ai的牌
         RefreshAiHand(currentTurn);
+        CardLayoutManager.Instance.ShowPlayArea(toPlay);
         Debug.Log(GetNameByTurn(currentTurn) + " 出了 " + toPlay.Count + " 张牌 ");
         CheckWiN(currentTurn);
         PassTurn();
@@ -163,7 +165,7 @@ public class PlayCardManager : Singleton<PlayCardManager>
     /// <summary>
     /// 玩家过牌：非先手时才能过S
     /// </summary>
-    private void PlayerPass()
+    public void PlayerPass()
     {
         if (isRoundOver) return;
         if (currentTurn != 0)
@@ -227,5 +229,12 @@ public class PlayCardManager : Singleton<PlayCardManager>
         {
             Debug.Log("你是地主请出牌");
         }
+    }
+    public void ResetState()
+    {
+        isRoundOver=false;
+        currentTurn = 0;
+        lastPlayedCards = null;
+        lastPlayedPlayer = -1;
     }
 }

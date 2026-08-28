@@ -52,6 +52,7 @@ public class GameMainManager : Singleton<GameMainManager>
     public void OnDealFInish(object param)
     {
         SwitchGameState(GameState.GrabLandlord);
+        EventCenter.Instance.Trigger(GameEvent.UI_OpenGrabPanel);
         Debug.Log("请抢地主");
     }
 
@@ -71,7 +72,7 @@ public class GameMainManager : Singleton<GameMainManager>
     /// 回调：有人出完牌 →进入结算阶段。
     /// </summary>
     /// <param name="param"></param>
-    public void OnRoundOver(GameState param)
+    public void OnRoundOver(object param)
     {
         SwitchGameState(GameState.RoundOver);
         Debug.Log("本局结束，进入结算");
@@ -94,5 +95,14 @@ public class GameMainManager : Singleton<GameMainManager>
         Debug.Log($"状态已切换为:{CurrentGameState}");
         //其他脚本监听 GameEvent.Game_StartGame，拿到 newState 参数执行对应业务逻辑
         EventCenter.Instance.Trigger(GameEvent.Game_StartGame, newstate);
+    }
+    public void RestarGame()
+    {
+        UIManager.Instance.ClosePanel(UIName.ResultPanel);
+        //清空出牌区
+        CardLayoutManager.Instance.ShowPlayArea(null);
+        LandlordManager.Instance.ResetState();
+        PlayCardManager.Instance.ResetState();
+        StartGame();
     }
 }

@@ -29,6 +29,7 @@ public class EventCenter :Singleton<EventCenter>
        if(_eventDict.TryGetValue(eventName,out var action))
         {
             action-=actionName;
+            _eventDict[eventName] = action;
         }
     }
     public void Trigger(string eventName,object param=null)
