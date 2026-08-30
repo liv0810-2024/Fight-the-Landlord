@@ -12,6 +12,7 @@ public class ResultPanel : BasePanel
         UIManager.Instance.RegisterPanel(UIName.ResultPanel, this);
         restartButton.onClick.AddListener(OnClickRestart);
         EventCenter.Instance.Register(GameEvent.Game_RoundOver, OnRounOver);
+        Close();
     }
 
     /// <summary>

@@ -25,8 +25,8 @@ public class GradPanel : BasePanel
     }
     private void OnDestroy()
     {
-        EventCenter.Instance.UnRegister(GameEvent.Game_GrabLandlord,OnOpenGrabPanel);
-        EventCenter.Instance.UnRegister(GameEvent.UI_OpenGrabPanel,OnGrabFinish);
+        EventCenter.Instance.UnRegister(GameEvent.Game_GrabLandlord, OnGrabFinish);
+        EventCenter.Instance.UnRegister(GameEvent.UI_OpenGrabPanel,OnOpenGrabPanel);
         grabButton.onClick.RemoveListener(OnClickGrab);
         passButton.onClick.RemoveListener(OnClickPass);
     }

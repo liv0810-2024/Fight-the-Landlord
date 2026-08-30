@@ -33,7 +33,7 @@ public class UIManager : Singleton<UIManager>
         BasePanel panel = GetPanel(name);
         if (panel != null)
         {
-            panelDict[name].Open();
+            panel.Open();
         }
     }
 
@@ -46,7 +46,7 @@ public class UIManager : Singleton<UIManager>
         BasePanel basePanel = GetPanel(name);
         if (basePanel != null)
         {
-            panelDict[name].Close();
+            basePanel.Close();
         }
     }
 

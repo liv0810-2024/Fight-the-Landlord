@@ -1,25 +1,26 @@
 using System.Collections.Generic;
 using UnityEngine;
+using DG.Tweening;
 
 /// <summary>
 /// 卡牌布局管理器（表现层）—— 把DeckManager发好的牌数据，显示到屏幕上。
 /// </summary>
 public class CardLayoutManager : Singleton<CardLayoutManager>
 {
-    public float cardWidth = 0.7f; //每张牌宽度
-    public float spacing = 0.45f; //相邻两张牌的中心距离
+    public float cardWidth = 1.6f; //每张牌宽度
+    public float spacing = 0.6f; //相邻两张牌的中心距离
     private Transform myHandArea; //玩家手牌区的父节点
     public Transform bottomCardArea;
     //牌的y坐标
-    public float myHandY = -3.5f;
-    public float bottomCardY = 3f;
+    public float myHandY = -3.2f;
+    public float bottomCardY = 2.8f;
 
     //Ai的相关设置
     public Transform leftHandArea;
     public Transform rightHandArea;
     public float spacingY;
-    public float leftHandX=-6.5f;
-    public float rightHandX=6.5f;
+    public float leftHandX=-7.5f;
+    public float rightHandX=7.5f;
     public float aiTotalCardLength=4f;
     //玩家手牌的Card 实体列表
     private List<Card> myHandCard=new List<Card>();
@@ -91,7 +92,10 @@ public class CardLayoutManager : Singleton<CardLayoutManager>
             // 计算这张牌的 x 坐标
             float x = startX + i * spacing;
             //设置位置
-            card.transform.position=new Vector3(x,y,0);
+            Vector3 targetPos=new Vector3(x,y,0);
+            card.transform.position = targetPos;
+            card.originalY = y;
+            card.transform.DOMove(targetPos, 0.4f).SetEase(Ease.OutCubic).SetDelay(i * 0.03f);
             if(resultList!=null)
             {
                 resultList.Add(card);
@@ -139,10 +143,10 @@ public class CardLayoutManager : Singleton<CardLayoutManager>
     public void LayoutAiCard(List<CardData> cardDatas, Transform parent, float x)
     {
         int count = cardDatas.Count;
-        if (count <= 1) return;
+        if (count <=1) return;
         float spacingY = aiTotalCardLength / (count - 1);
-        float totalLength = (count - 1) * spacingY + aiTotalCardLength;
-        float startY = -totalLength / 2f;
+       // float totalLength = (count - 1) * spacingY + aiTotalCardLength;
+        float startY = -aiTotalCardLength / 2f;
         for (int i = 0; i < count; i++)
         {
             Card card = CardManager.Instance.CreateCard(cardDatas[i], parent);
@@ -170,7 +174,10 @@ public class CardLayoutManager : Singleton<CardLayoutManager>
         {
             Card card = CardManager.Instance.CreateCard(cards[i], playArea);
             float x = startX + i * spacing;
-            card.transform.position = new Vector3(x, 0, 0);
+            Vector3 targetPos = new Vector3(x, 0, 0);
+            card.transform.position = targetPos + new Vector3(0, -2f, 0);
+            card.transform.DOMove(targetPos, 0.3f).SetEase(Ease.OutBack);
         }
     }
+
 }

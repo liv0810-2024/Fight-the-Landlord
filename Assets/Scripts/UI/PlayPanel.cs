@@ -1,6 +1,5 @@
 using System.Collections;
 using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -22,7 +21,7 @@ public class PlayPanel : BasePanel
     }
     private void OnStartPlay(object param)
     {
-        OnOpen();
+        Open();
     }
     private void OnRoundOver(object param)
     {

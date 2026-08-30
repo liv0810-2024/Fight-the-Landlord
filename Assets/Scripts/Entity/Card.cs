@@ -1,4 +1,7 @@
 using UnityEngine;
+using DG.Tweening;
+using TMPro;
+using System.Collections;
 
 public class Card : MonoBehaviour
 {
@@ -11,6 +14,7 @@ public class Card : MonoBehaviour
     public float originalY; //卡牌未选中时的原始 Y坐标
     public const float SELECT_OFFSET_Y = 0.3f;
     public const float SELECT_SCALE = 1.1f; //放大百分之十
+    private TextMeshPro rankText; // ← 新增：牌面数字+花色的文字组件
 
     private void Awake()
     {
@@ -18,6 +22,11 @@ public class Card : MonoBehaviour
         if (spriteRenderer == null)
         {
             spriteRenderer = gameObject.AddComponent<SpriteRenderer>();
+        }
+        rankText = GetComponentInChildren<TextMeshPro>();
+        if(rankText == null)
+        {
+            Debug.LogWarning("Card：找不到子物体RankText 的TextMeshPro，牌面文字无法显示");
         }
     }
     /// <summary>
@@ -29,7 +38,7 @@ public class Card : MonoBehaviour
         cardData = data;
         isSelected = false;
         isPlayOut = false;
-        originalY = transform.position.y;
+        //originalY = transform.position.y;
         UpdateCardDisplay();
         gameObject.SetActive(true);
     }
@@ -44,26 +53,34 @@ public class Card : MonoBehaviour
             return;
         }
         // ----- 第一步：根据花色设置颜色 -----
-        switch (cardData.suit)
+        spriteRenderer.color = new Color(0.9f, 0.9f, 0.9f, 1f);
+        if (rankText != null)
         {
-            case CardSuit.Heart:
-            case CardSuit.Diamond:
-                // (1, 0.3, 0.3) 是柔和的红色
-                spriteRenderer.color = new Color(1f, 0.3f, 0.3f);
-                break;
-            case CardSuit.Spade:
-            case CardSuit.Club:
-                spriteRenderer.color = new Color(0.2f, 0.2f, 0.2f);
-                break;
-            case CardSuit.Nome:
-                spriteRenderer.color = new Color(1f, 0.2f, 0.2f);
-                break;
+            rankText.text =GetDisplayText();   // 内容：如"A♠"、"10♥"、"小王"
+            rankText.color = GetSuitColor();
         }
+        gameObject.name=GetSuitSymbol()+GetRankDisplayText();
+        //旧版
+        //switch (cardData.suit)
+        //{
+        //    case CardSuit.Heart:
+        //    case CardSuit.Diamond:
+        //        // (1, 0.3, 0.3) 是柔和的红色
+        //        spriteRenderer.color = new Color(1f, 0.3f, 0.3f);
+        //        break;
+        //    case CardSuit.Spade:
+        //    case CardSuit.Club:
+        //        spriteRenderer.color = new Color(0.2f, 0.2f, 0.2f);
+        //        break;
+        //    case CardSuit.Nome:
+        //        spriteRenderer.color = new Color(1f, 0.2f, 0.2f);
+        //        break;
+        //}
         // ----- 第二步：获取点数显示文字 ----
         // 调用私有方法，把枚举转成可读文字
-        string rankText = GetRankDisplayText();
-        string suitSymbolText = GetSuitSymbol();
-        gameObject.name = suitSymbolText + rankText;
+        //string rankText = GetRankDisplayText();
+        //string suitSymbolText = GetSuitSymbol();
+        //gameObject.name = suitSymbolText + rankText;
     }
     /// <summary>
     /// 【点数→文字】把CardRank 枚举值转成玩家看得懂的文字。
@@ -164,19 +181,26 @@ public class Card : MonoBehaviour
     public void SetSelected(bool selected)
     {
         isSelected = selected;
-        Vector3 newPos=gameObject.transform.position;
-        if (isSelected)
-        {
-            newPos.y = originalY + SELECT_OFFSET_Y;
-            transform.position = newPos;
-            transform.localScale=new Vector3(1.1f, 1.1f, 1f);
-        }
-        else
-        {
-            newPos.y = originalY;
-            transform.position = newPos;
-            transform.localScale = Vector3.one;
-        }
+        // 目标y：选中则上浮，未选中则回到原始位置
+        float targetY = selected ? originalY + SELECT_OFFSET_Y : originalY;
+        //目标缩放：选中放大，未选中还原（用上了SELECT_SCALE 常量）
+        float targetScale = selected ? SELECT_SCALE : 1f;
+        transform.DOMoveY(targetY, 0.15f).SetEase(Ease.InOutQuad);
+        transform.DOScale(targetScale, 0.15f).SetEase(Ease.InOutQuad);
+        //旧版本
+        //Vector3 newPos=gameObject.transform.position;
+        //if (isSelected)
+        //{
+        //    newPos.y = originalY + SELECT_OFFSET_Y;
+        //    transform.position = newPos;
+        //    transform.localScale=new Vector3(1.1f, 1.1f, 1f);
+        //}
+        //else
+        //{
+        //    newPos.y = originalY;
+        //    transform.position = newPos;
+        //    transform.localScale = Vector3.one;
+        //}
         EventCenter.Instance.Trigger(GameEvent.Card_Select, this);
     }
     /// <summary>
@@ -210,5 +234,38 @@ public class Card : MonoBehaviour
     {
         if (isPlayOut) return;
         ToggleSelect();
+    }
+
+    /// <summary>
+    /// 【拼牌面文字】数字 + 花色；大小王没有花色，只显示"小王/大王"。
+      /// </summary>
+    private string GetDisplayText()
+    {
+        if (cardData.suit == CardSuit.Nome)
+        {
+            return GetRankDisplayText();
+        }
+        return GetRankDisplayText()+GetSuitSymbol();
+    }
+
+
+    /// <summary>
+    /// 【花色→颜色】红桃♥、方块♦红色；黑桃♠、梅花♣黑色；大王红、小王黑。
+      /// </summary>
+    private Color GetSuitColor()
+    {
+        switch (cardData.suit) 
+        {
+            case CardSuit.Heart:
+            case CardSuit.Diamond:
+                return new Color(0.85f, 0.2f, 0.2f, 1f);
+            case CardSuit.Spade:
+            case CardSuit.Club:
+                return new Color(0.15f, 0.15f, 0.15f, 1f);
+            case CardSuit.Nome:
+                return cardData.rank == CardRank.BigKing ? new Color(0.85f, 0.2f, 0.2f, 1f) : new Color(0.15f, 0.15f, 0.15f, 1f);
+            default:
+                return Color.black;
+        }
     }
 }

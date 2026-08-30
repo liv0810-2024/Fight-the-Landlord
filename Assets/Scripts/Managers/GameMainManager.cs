@@ -84,6 +84,12 @@ public class GameMainManager : Singleton<GameMainManager>
     {
         //// 触发ObjectPoolManager 的单例初始化（第一次访问 Instance 会自动创建）
         var pool = ObjectPoolManager.Instance;
+        var data = DataManager.Instance;
+        var deck=DeckManager.Instance;
+        var layout=CardLayoutManager.Instance;
+        var play = PlayCardManager.Instance;
+        var landlord=LandlordManager.Instance;
+        var ui=UIManager.Instance;
     }
     /// <summary>
     /// 切换游戏全局状态，所有状态变更强制调用这个方法
