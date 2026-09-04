@@ -1287,8 +1287,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f8d002e849df60d49bbe41d3113f381a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  playButton: {fileID: 167882452}
-  passButton: {fileID: 2102950509}
+  playButton: {fileID: 2102950509}
+  passButton: {fileID: 167882452}
 --- !u!1 &1675690919
 GameObject:
   m_ObjectHideFlags: 0

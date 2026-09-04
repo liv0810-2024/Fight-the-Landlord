@@ -15,6 +15,7 @@ public class Card : MonoBehaviour
     public const float SELECT_OFFSET_Y = 0.3f;
     public const float SELECT_SCALE = 1.1f; //放大百分之十
     private TextMeshPro rankText; // ← 新增：牌面数字+花色的文字组件
+    
 
     private void Awake()
     {
