@@ -97,7 +97,7 @@ public class PlayCardManager : Singleton<PlayCardManager>
         }
         lastPlayedCards = new List<CardData>(played);
         lastPlayedPlayer = 0; //我出的
-        consecutivePassCount=0;
+        consecutivePassCount = 0;
         CardLayoutManager.Instance.ShowMyHand(); //表现层刷新
         CardLayoutManager.Instance.ShowPlayArea(played);
         //暂时只轮到左AI，AI 逻辑教程12做
@@ -126,12 +126,12 @@ public class PlayCardManager : Singleton<PlayCardManager>
         }
         lastPlayedCards = new List<CardData>(toPlay);
         lastPlayedPlayer = currentTurn;
-        consecutivePassCount=0;
+        consecutivePassCount = 0;
         //刷新ai的牌
         RefreshAiHand(currentTurn);
         CardLayoutManager.Instance.ShowPlayArea(toPlay);
         Debug.Log(GetNameByTurn(currentTurn) + " 出了 " + toPlay.Count + " 张牌 ");
-        if(CheckWin(currentTurn))return;
+        if (CheckWin(currentTurn)) return;
         PassTurn();
     }
     /// <summary>
@@ -240,11 +240,8 @@ public class PlayCardManager : Singleton<PlayCardManager>
             Debug.Log($"检查胜利失败：玩家索引={playerIndex} 无效");
             return false;
         }
-        if (hand != null)
-        {
-            Debug.Log(
-    $"检查胜利：玩家索引={playerIndex}," +$"玩家名称={GetNameByTurn(playerIndex)}," +$"手牌数量={hand.Count}");
-        }
+        Debug.Log($"检查胜利：玩家索引={playerIndex}," + $"玩家名称={GetNameByTurn(playerIndex)}," + $"手牌数量={hand.Count}");
+
         if (hand.Count > 0)
         {
             return false;
@@ -262,7 +259,7 @@ public class PlayCardManager : Singleton<PlayCardManager>
     public void StartPlay(int firstPlayer)
     {
         isRoundOver = false;
-        consecutivePassCount=0;
+        consecutivePassCount = 0;
         currentTurn = firstPlayer;
         lastPlayedCards = null;
         lastPlayedPlayer = -1;
@@ -283,14 +280,14 @@ public class PlayCardManager : Singleton<PlayCardManager>
         lastPlayedPlayer = -1;
     }
 
-/// <summary>
-/// 负责清理当前这一轮牌权
-/// </summary>
+    /// <summary>
+    /// 负责清理当前这一轮牌权
+    /// </summary>
     private void ResetTrick()
     {
-        lastPlayedPlayer=-1;
-        lastPlayedCards=null;
-        consecutivePassCount=0;
+        lastPlayedPlayer = -1;
+        lastPlayedCards = null;
+        consecutivePassCount = 0;
         //清空屏幕中央的上一手牌
         CardLayoutManager.Instance.ShowPlayArea(null);
     }
@@ -301,13 +298,6 @@ public class PlayCardManager : Singleton<PlayCardManager>
     /// <returns></returns>
     private bool IsFreeTurn()
     {
-        if (lastPlayedCards == null)
-        {
-            return true;
-        }
-        else
-        {
-            return false;
-        }
+        return lastPlayedCards==null||lastPlayedCards.Count==0;
     }
 }

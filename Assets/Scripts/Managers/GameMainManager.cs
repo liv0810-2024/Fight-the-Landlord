@@ -52,8 +52,8 @@ public class GameMainManager : Singleton<GameMainManager>
     public void OnDealFInish(object param)
     {
         SwitchGameState(GameState.GrabLandlord);
-        EventCenter.Instance.Trigger(GameEvent.UI_OpenGrabPanel);
-        Debug.Log("请抢地主");
+        int first=Random.Range(0,3);
+        LandlordManager.Instance.StartBidding(first);
     }
 
     /// <summary>
