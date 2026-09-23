@@ -13,9 +13,13 @@ public class GradPanel : BasePanel
     private void Awake()
     {
         UIManager.Instance.RegisterPanel(UIName.GrabPanel, this); //登记
-        //监听打开
+        //轮到玩家时打开
         EventCenter.Instance.Register(GameEvent.UI_OpenGrabPanel,OnOpenGrabPanel);
-        //监听关闭
+        //牌权转给 AI 时关闭
+        EventCenter.Instance.Register(GameEvent.UI_CloseGrabPanel, OnCloseGrabPanel);
+        //地主确定时兜底关闭。
+        //【为什么两个都要】"第二次机会"那条路径是玩家点完「抢」直接 ConfirmLandlord 的，
+        //中间不经过 ContinueBidding，所以不会触发 UI_CloseGrabPanel，得靠这个兜住。
         EventCenter.Instance.Register(GameEvent.Game_GrabLandlord,OnGrabFinish);
         //.onClick:Unity UI 按钮自带的事件，当用户点击按钮时会触发
         grabButton.onClick.AddListener(OnClickGrab);
@@ -26,6 +30,7 @@ public class GradPanel : BasePanel
     private void OnDestroy()
     {
         EventCenter.Instance.UnRegister(GameEvent.Game_GrabLandlord, OnGrabFinish);
+        EventCenter.Instance.UnRegister(GameEvent.UI_CloseGrabPanel, OnCloseGrabPanel);
         EventCenter.Instance.UnRegister(GameEvent.UI_OpenGrabPanel,OnOpenGrabPanel);
         grabButton.onClick.RemoveListener(OnClickGrab);
         passButton.onClick.RemoveListener(OnClickPass);
@@ -33,6 +38,10 @@ public class GradPanel : BasePanel
     private void OnOpenGrabPanel(object param)
     {
         Open();
+    }
+    private void OnCloseGrabPanel(object param)
+    {
+        Close();
     }
     private void OnGrabFinish(object param)
     {

@@ -82,13 +82,19 @@ public class GameMainManager : Singleton<GameMainManager>
     /// </summary>
     private void InitAllFramework()
     {
-        //// 触发ObjectPoolManager 的单例初始化（第一次访问 Instance 会自动创建）
+        // 触发各管理器的单例初始化（第一次访问 Instance 会自动创建）
+        // 【顺序要求】SaveManager 必须最先初始化 —— AudioManager 和 ResultManager
+        // 都要在 Awake 里读存档，晚了会拿到还没加载的空数据。
+        var save = SaveManager.Instance;
         var pool = ObjectPoolManager.Instance;
         var data = DataManager.Instance;
         var deck=DeckManager.Instance;
+        var cards = CardManager.Instance;
         var layout=CardLayoutManager.Instance;
         var play = PlayCardManager.Instance;
         var landlord=LandlordManager.Instance;
+        var result = ResultManager.Instance;
+        var audio = AudioManager.Instance;
         var ui=UIManager.Instance;
     }
     /// <summary>
@@ -105,8 +111,8 @@ public class GameMainManager : Singleton<GameMainManager>
     public void RestarGame()
     {
         UIManager.Instance.ClosePanel(UIName.ResultPanel);
-        //清空出牌区
-        CardLayoutManager.Instance.ShowPlayArea(null);
+        //清空全部卡牌显示区（手牌/底牌/左右AI/出牌区）
+        CardLayoutManager.Instance.ClearAllAreas();
         LandlordManager.Instance.ResetState();
         PlayCardManager.Instance.ResetState();
         StartGame();

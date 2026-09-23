@@ -55,6 +55,14 @@ public class LandlordManager : Singleton<LandlordManager>
     /// 倍数
     /// </summary>
     private int multiple=1;
+
+    /// <summary>
+    /// 本局底牌的快照。
+    /// 【为什么要留一份】AssignBottomCards 把底牌发进地主手牌后会把 bottomCards 清空，
+    /// 而底牌区要等到"地主确定"那一刻才亮出来 —— 那时候原列表已经是空的，
+    /// 不留快照就只能亮出 3 张空气。
+    /// </summary>
+    private List<CardData> bottomCardSnapshot = new List<CardData>();
     #endregion
     #region 生命周期
     protected override void Awake()
@@ -79,6 +87,7 @@ public class LandlordManager : Singleton<LandlordManager>
         isLandlordConfirmed=false;
         isSecondChance=false;
         multiple=1;
+        if (bottomCardSnapshot != null) bottomCardSnapshot.Clear();
     }
 
 
@@ -114,6 +123,10 @@ public class LandlordManager : Singleton<LandlordManager>
         }
         else
         {
+            // 【补】轮到 AI 时把面板收起来。玩家点完的那一瞬间牌权就转手了，
+            // 不收的话面板会一直亮到地主确定为止，中间隔着两次 AI 思考 ——
+            // 玩家看着能点，点下去却被 ResolveBid 静默忽略，跟卡死一样。
+            EventCenter.Instance.Trigger(GameEvent.UI_CloseGrabPanel);
             StartCoroutine(AIBidAfterDelay(currentBidderIndex));
         }
     }
@@ -342,6 +355,9 @@ public class LandlordManager : Singleton<LandlordManager>
     private IEnumerator DelayedRedeal()
     {
         yield return null;
+        // 【补】三家都不叫这条路径不经过 ConfirmLandlord，没人会去关面板。
+        // 不补的话面板会一路亮到下一轮发牌，看着像游戏卡住了。
+        EventCenter.Instance.Trigger(GameEvent.UI_CloseGrabPanel);
         ResetState();
         GameMainManager.Instance.StartGame();
     }
@@ -387,10 +403,18 @@ public class LandlordManager : Singleton<LandlordManager>
         }
         // 打印底牌（方便调试）
         Debug.Log($"[LandlordManager] 底牌: {string.Join(", ", bottomCards.ConvertAll(c => $"{c.rank}{c.suit}"))}");
+        // 先留快照再清空，否则底牌区没东西可亮
+        bottomCardSnapshot = new List<CardData>(bottomCards);
         hand.AddRange(DeckManager.Instance.bottomCards);
         hand.Sort((a,b)=>a.weight.CompareTo(b.weight));
         bottomCards.Clear();
     }
+
+    /// <summary>
+    /// 获取本局底牌的快照（供表现层在地主确定后亮底牌）。
+    /// 返回的是副本语义上的只读列表，调用方不要往里增删。
+    /// </summary>
+    public List<CardData> GetBottomCardSnapshot() => bottomCardSnapshot;
 
     /// <summary>
     /// 玩家选择"抢"或"不抢"的入口。

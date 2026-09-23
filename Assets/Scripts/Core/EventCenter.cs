@@ -16,7 +16,7 @@ public class EventCenter :Singleton<EventCenter>
     {
         if (!_eventDict.ContainsKey(name))
         {
-            //字典里面没有这个事件，先初始化赋值null 防止报错
+            //字典里面没有这个事件，先初始化赋值null 防止报错+
             _eventDict[name] = null; 
         }
         _eventDict[name] += action; //+= 追加回调函数，多个脚本可以监听同一个事件
@@ -56,13 +56,27 @@ public static class GameEvent
     public const string Game_GrabLandlord = "Game_GrabLandlord";
     /// <summary>本局游戏回合结束，结算事件，携带参数可以传本局分数、胜负结果</summary>
     public const string Game_RoundOver = "Game_RoundOver";
+    /// <summary>结算数据已就绪，携带参数：ResultData（供表现层刷新结算面板）</summary>
+    public const string Game_ResultReady = "Game_ResultReady";
     /// <summary>玩家出牌事件：有玩家打出一组卡牌，携带参数传递打出去的卡牌集合</summary>
     public const string Game_PlayCard = "Game_PlayCard";
+    /// <summary>
+    /// 出牌权变更事件。携带参数：当前该出牌的玩家索引（int，0=我，1/2=AI）。
+    /// 【用途】出牌面板据此决定显示还是隐藏 —— 没轮到自己时按钮点了也没用。
+    /// </summary>
+    public const string Game_TurnChanged = "Game_TurnChanged";
     //卡牌交互事件
     public const string Card_Select = "Card_Select";
     public const string Card_PlayOut = "Card_PlayOut";
     //UI事件
     /// <summary>打开抢地主选择面板事件，通知UI显示抢地主/不抢地主按钮弹窗</summary>
     public const string UI_OpenGrabPanel = "UI_OpenGrabPanel";
+    /// <summary>
+    /// 关闭抢地主选择面板事件。
+    /// 【为什么要单独一个】抢地主是三家轮流叫，只有轮到玩家时才该显示按钮。
+    /// 玩家点完之后牌权就转给 AI 了，这时候必须把面板收起来 ——
+    /// 亮着的话玩家会以为还能再点，实际点下去会被静默忽略，像卡死一样。
+    /// </summary>
+    public const string UI_CloseGrabPanel = "UI_CloseGrabPanel";
 }
 
