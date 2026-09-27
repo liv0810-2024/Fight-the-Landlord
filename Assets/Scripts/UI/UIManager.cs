@@ -51,6 +51,19 @@ public class UIManager : Singleton<UIManager>
     }
 
     /// <summary>
+    /// 清空面板注册表。切场景之前必须调用。
+    ///
+    /// 【为什么】UIManager 是 DontDestroyOnLoad 的单例，切场景后它还活着，
+    /// 但它记着的那些面板会随旧场景一起被销毁 —— 字典里留下的是"已经死掉的对象"。
+    /// 之后再按名字去访问，就是 MissingReferenceException。
+    /// 新场景的面板会在各自 Awake 里重新注册进来，清掉不亏。
+    /// </summary>
+    public void ClearPanels()
+    {
+        panelDict.Clear();
+    }
+
+    /// <summary>
     /// 获取面板
     /// </summary>
     /// <param name="name"></param>

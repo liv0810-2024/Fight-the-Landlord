@@ -27,13 +27,12 @@ public class GameMainManager : Singleton<GameMainManager>
         EventCenter.Instance.Register(GameEvent.Game_GrabLandlord,OnGrabLandlord);
         EventCenter.Instance.Register(GameEvent.Game_RoundOver,OnRoundOver);
     }
-    private IEnumerator Start()
+    private void Start()
     {
+        // 【只初始化，不发牌】发牌改由玩家点"开始游戏"触发，见 GameLauncher.EnterGame。
+        // 以前这里无条件调用 StartGame()，所以一按 Play 牌就发完了，大厅界面形同虚设。
+        // 开局时机属于"玩家决定"的事，不该由场景加载替玩家决定。
         InitAllFramework();
-        // 【防御式编程】等卡牌数据加载完成，再开始发牌。
-        // WaitUntil(条件)：协程会""停在这里"，直到条件返回 true 才继续。
-        yield return new WaitUntil(() => DataManager.Instance.isDataLoaded);
-        StartGame();
     }
 
     /// <summary>
